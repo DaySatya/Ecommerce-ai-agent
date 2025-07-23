@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-commerce Analytics Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .chart-container {
+            margin: 30px 0;
+            position: relative;
+            height: 400px;
+            width: 100%;
+        }
+        .query-form {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f0f8ff;
+            border-radius: 8px;
+        }
+        textarea, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .response-area {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-height: 100px;
+            background: white;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #eee;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+        }
+        .tab.active {
+            background: #4CAF50;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>E-commerce Analytics Dashboard</h1>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('query')">Natural Language Query</div>
+            <div class="tab" onclick="switchTab('visualization')">Visualizations</div>
+            <div class="tab" onclick="switchTab('stream')">Streaming Response</div>
+        </div>
+        
+        <div id="query-tab" class="tab-content active">
+            <div class="query-form">
+                <h2>Ask a Question</h2>
+                <textarea id="question-input" rows="3" placeholder="e.g., What is my total sales?"></textarea>
+                <button onclick="submitQuery()">Get Answer</button>
+                <div class="response-area" id="query-response"></div>
+            </div>
+        </div>
+        
+        <div id="visualization-tab" class="tab-content">
+            <div class="query-form">
+                <h2>Generate Visualization</h2>
+                <textarea id="visualization-input" rows="3" placeholder="e.g., Show sales trends over time"></textarea>
+                <select id="chart-type">
+                    <option value="auto">Auto Select</option>
+                    <option value="line">Line Chart</option>
+                    <option value="bar">Bar Chart</option>
+                    <option value="pie">Pie Chart</option>
+                </select>
+                <button onclick="generateVisualization()">Generate Chart</button>
+                <div class="chart-container">
+                    <canvas id="chart"></canvas>
+                </div>
+                <div class="response-area" id="chart-analysis"></div>
+            </div>
+        </div>
+        
+        <div id="stream-tab" class="tab-content">
+            <div class="query-form">
+                <h2>Streaming Response</h2>
+                <textarea id="stream-input" rows="3" placeholder="e.g., Explain sales trends like I'm a beginner"></textarea>
+                <button onclick="startStream()">Start Streaming</button>
+                <div class="response-area" id="stream-response"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let chart = null;
+        
+        function switchTab(tabId) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(`${tabId}-tab`).classList.add('active');
+            document.querySelector(`.tab[onclick="switchTab('${tabId}')"]`).classList.add('active');
+        }
+        
+        async function submitQuery() {
+            const question = document.getElementById('question-input').value;
+            const responseArea = document.getElementById('query-response');
+            responseArea.innerHTML = 'Loading...';
+            
+            try {
+                const response = await fetch(`/query?question=${encodeURIComponent(question)}`);
+                const data = await response.json();
+                
+                let html = `
+                    <h3>Question: ${data.question}</h3>
+                    <p><strong>Answer:</strong> ${data.answer}</p>
+                    <details>
+                        <summary>Technical Details</summary>
+                        <p><strong>SQL Query:</strong> <code>${data.sql_query}</code></p>
+                        <pre>${JSON.stringify(data.data, null, 2)}</pre>
+                    </details>
+                `;
+                
+                responseArea.innerHTML = html;
+            } catch (error) {
+                responseArea.innerHTML = `Error: ${error.message}`;
+            }
+        }
+        
+        async function generateVisualization() {
+            const question = document.getElementById('visualization-input').value;
+            const chartType = document.getElementById('chart-type').value;
+            const chartCanvas = document.getElementById('chart');
+            const analysisArea = document.getElementById('chart-analysis');
+            
+            analysisArea.innerHTML = 'Loading...';
+            
+            try {
+                // Get chart image
+                const response = await fetch(
+                    `/query/visualize?question=${encodeURIComponent(question)}&chart_type=${chartType}`
+                );
+                
+                if (!response.ok) {
+                    throw new Error(await response.text());
+                }
+                
+                // Create image from blob
+                const blob = await response.blob();
+                const imgUrl = URL.createObjectURL(blob);
+                
+                // If we already have a chart, destroy it
+                if (chart) {
+                    chart.destroy();
+                }
+                
+                // Create new image element
+                const img = document.createElement('img');
+                img.src = imgUrl;
+                img.style.maxWidth = '100%';
+                
+                // Clear canvas and append image
+                chartCanvas.parentNode.innerHTML = '';
+                chartCanvas.parentNode.appendChild(img);
+                
+                // Get analysis
+                const dataResponse = await fetch(`/query?question=${encodeURIComponent(question)}`);
+                const data = await dataResponse.json();
+                
+                // For demo purposes, we'll just show the data
+                analysisArea.innerHTML = `
+                    <h3>Chart Analysis</h3>
+                    <p>Data used for visualization:</p>
+                    <pre>${JSON.stringify(data.data, null, 2)}</pre>
+                `;
+                
+            } catch (error) {
+                analysisArea.innerHTML = `Error: ${error.message}`;
+            }
+        }
+        
+        async function startStream() {
+            const question = document.getElementById('stream-input').value;
+            const responseArea = document.getElementById('stream-response');
+            responseArea.innerHTML = '';
+            
+            try {
+                const response = await fetch(`/query/stream?question=${encodeURIComponent(question)}`);
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    
+                    const chunk = decoder.decode(value);
+                    responseArea.innerHTML += chunk;
+                    responseArea.scrollTop = responseArea.scrollHeight;
+                }
+            } catch (error) {
+                responseArea.innerHTML = `Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>

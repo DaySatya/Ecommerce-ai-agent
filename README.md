@@ -54,7 +54,6 @@ An AI-powered solution that answers natural language questions about sales, ads 
 | Endpoint Type | URL |
 |--------------|-----|
 | Raw Data | [`http://localhost:8000/query?question=What%20is%20my%20total%20sales?`](http://localhost:8000/query?question=What%20is%20my%20total%20sales?) |
-| Streamed | [`http://localhost:8000/query/stream?question=What%20is%20my%20total%20sales?`](http://localhost:8000/query/stream?question=What%20is%20my%20total%20sales?) |
 | Clean Answer | [`http://localhost:8000/query/clean?question=What%20is%20my%20total%20sales?`](http://localhost:8000/query/clean?question=What%20is%20my%20total%20sales?) |
 | Visualization | [`http://localhost:8000/query/visualize?question=Show+me+sales+over+time`](http://localhost:8000/query/visualize?question=Show+me+sales+over+time) |
 
@@ -62,7 +61,6 @@ An AI-powered solution that answers natural language questions about sales, ads 
 | Endpoint Type | URL |
 |--------------|-----|
 | Raw Data | [`http://localhost:8000/query?question=Calculate%20the%20RoAS%20(Return%20on%20Ad%20Spend)`](http://localhost:8000/query?question=Calculate%20the%20RoAS%20(Return%20on%20Ad%20Spend)) |
-| Streamed | [`http://localhost:8000/query/stream?question=Calculate%20the%20RoAS%20(Return%20on%20Ad%20Spend)`](http://localhost:8000/query/stream?question=Calculate%20the%20RoAS%20(Return%20on%20Ad%20Spend)) |
 | Clean Answer | [`http://localhost:8000/query/clean?question=Calculate%20the%20RoAS%20(Return%20on%20Ad%20Spend)`](http://localhost:8000/query/clean?question=Calculate%20the%20RoAS%20(Return%20on%20Ad%20Spend)) |
 | Visualization | [`http://localhost:8000/query/visualize?question=Show+RoAS+trends+by+product`](http://localhost:8000/query/visualize?question=Show+RoAS+trends+by+product) |
 
@@ -70,7 +68,6 @@ An AI-powered solution that answers natural language questions about sales, ads 
 | Endpoint Type | URL |
 |--------------|-----|
 | Raw Data | [`http://localhost:8000/query?question=Which%20product%20had%20the%20highest%20CPC%20(Cost%20Per%20Click)?`](http://localhost:8000/query?question=Which%20product%20had%20the%20highest%20CPC%20(Cost%20Per%20Click)?) |
-| Streamed | [`http://localhost:8000/query/stream?question=Which%20product%20had%20the%20highest%20CPC%20(Cost%20Per%20Click)?`](http://localhost:8000/query/stream?question=Which%20product%20had%20the%20highest%20CPC%20(Cost%20Per%20Click)?) |
 | Clean Answer | [`http://localhost:8000/query/clean?question=Which%20product%20had%20the%20highest%20CPC%20(Cost%20Per%20Click)?`](http://localhost:8000/query/clean?question=Which%20product%20had%20the%20highest%20CPC%20(Cost%20Per%20Click)?) |
 | Visualization | [`http://localhost:8000/query/visualize?question=Compare+CPC+across+products`](http://localhost:8000/query/visualize?question=Compare+CPC+across+products) |
 
